@@ -1,0 +1,1021 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>车祸大会Bingo · 职场翻车宾果</title>
+<style>
+  :root{
+    --paper:#FBF8F2;
+    --stage:#F6F1E8;         /* 舞台暖米 */
+    --panel:#FFFFFF;
+    --ink:#37332B;           /* 深咖，替代纯黑 */
+    --ink-2:#5C564C;
+    --ink-3:#6F695E;         /* 加深：小白字也过 4.5:1 */
+    --rule:#E8E1D3;
+    --accent:#E2571E;        /* 警示橙（图形/大字用） */
+    --accent-deep:#C7481A;
+    --accent-ink:#B33F14;    /* 橙色文字专用，保证 4.5:1 */
+    --accent-soft:#FBE9DF;
+    --derail:#E0A526;        /* 跑题 */
+    --idle:#4B6B8A;          /* 空转 */
+    --scope:#3E8E7E;         /* 加码 */
+    --demo:#C2503A;          /* 劝退 */
+    --sans:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;
+    --serif:"Songti SC","Noto Serif SC",Georgia,serif;
+    --gutter:clamp(32px,5vw,88px);   /* 页面左右安全边距：所有内容共用同一条轴线 */
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{background:var(--paper);color:var(--ink);font-family:var(--sans);line-height:1.6;font-size:16px;-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;flex-direction:column}
+  /* 键盘焦点环：2px 实线 + 偏移，任何可聚焦元素都可见 */
+  :focus-visible{outline:2px solid var(--accent-ink);outline-offset:2px;border-radius:4px}
+  button{font:inherit;color:inherit}
+  /* 尊重系统减弱动效设置 */
+  @media(prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation:none!important;transition:none!important}
+  }
+  /* 顶栏 */
+  .topbar{border-bottom:1px solid var(--rule);background:var(--paper);position:sticky;top:0;z-index:10;flex:none}
+  .topbar-in{max-width:calc(1240px + var(--gutter)*2);margin:0 auto;padding:11px var(--gutter);display:flex;justify-content:space-between;align-items:center}
+  .brand{font-family:var(--serif);font-weight:600;font-size:19px;letter-spacing:.5px}
+  .brand b{color:var(--accent)}
+  .brand small{font-family:var(--sans);font-weight:400;font-size:12px;color:var(--ink-3);margin-left:8px;letter-spacing:0}
+  /* 主容器：占满一屏、宽度铺开 */
+  .wrap{width:100%;max-width:calc(1240px + var(--gutter)*2);margin:0 auto;padding:22px var(--gutter);flex:1;min-height:0;display:flex;flex-direction:column}
+  footer{flex:none;width:100%;max-width:calc(1240px + var(--gutter)*2);margin:0 auto;padding:10px var(--gutter) 16px;font-size:12.5px;color:var(--ink-3);line-height:1.7;border-top:1px solid var(--rule)}
+  h1{font-family:var(--serif);font-weight:600;font-size:clamp(26px,3.4vw,40px);line-height:1.32;margin:0 0 14px}
+  .lede{font-size:15.5px;line-height:1.8;color:var(--ink-2);margin:0 0 20px;max-width:38em}
+  .step-tag{display:inline-block;font-size:12.5px;color:var(--accent-ink);background:var(--accent-soft);padding:3px 11px;border-radius:20px;margin-bottom:14px;font-weight:600}
+  .card{background:var(--panel);border:1px solid var(--rule);border-radius:14px;padding:20px}
+  .card h2{font-size:17px;font-weight:600;margin-bottom:4px}
+  .card p.sub{font-size:13.5px;color:var(--ink-3);margin-bottom:16px}
+  .opts{display:grid;gap:12px}
+  .opts.cols-3{grid-template-columns:repeat(3,1fr)}
+  .opts.cols-2{grid-template-columns:repeat(2,1fr)}
+  .opt{border:1.5px solid var(--rule);border-radius:12px;padding:15px;cursor:pointer;transition:.15s;background:var(--panel);text-align:left;display:block;width:100%}
+  .opt:hover{border-color:var(--ink-3)}
+  .opt.on{border-color:var(--accent);background:var(--accent-soft)}
+  .opt .t{font-weight:600;font-size:15.5px}
+  .opt .d{font-size:12.5px;color:var(--ink-3);margin-top:3px}
+  .opt .pick{font-size:12px;color:var(--accent-ink);font-weight:600;margin-top:8px;opacity:0;transition:.15s}
+  .opt.on .pick{opacity:1}
+  .btn{font:inherit;font-size:15.5px;min-height:44px;padding:13px 26px;background:var(--accent);color:#fff;border:none;border-radius:10px;cursor:pointer;font-weight:600}
+  .btn:hover{background:var(--accent-deep)}
+  .btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--rule)}
+  .btn.ghost:hover{border-color:#C9BFAD}
+  .btn:disabled{background:#E3DACB;color:#6F695E;cursor:not-allowed}
+  .btnrow{display:flex;gap:12px;flex-wrap:wrap}
+
+  /* ===== 分阶段舞台：统一暖米底，封面/报告加柔光 ===== */
+  body.phase-setup,body.phase-report{background:
+    radial-gradient(900px 540px at 86% -12%,#FCE7D3,transparent 70%),
+    radial-gradient(760px 480px at -10% 110%,#E3EDF5,transparent 72%),
+    var(--stage)}
+  body.phase-play,body.phase-post{background:#F4EEE4}
+
+  /* ===== 封面：暖米舞台 + 一张白色大明信片卡 ===== */
+  .setup{flex:1;display:flex;align-items:center;justify-content:center;position:relative;padding:6px 0 30px}
+  .cover{position:relative;z-index:1;width:100%;max-width:1120px;background:var(--panel);border:1px solid var(--rule);border-radius:20px;
+    padding:32px 40px 28px;display:grid;grid-template-columns:1.06fr .94fr;gap:48px;box-shadow:0 24px 60px rgba(140,110,80,.14);overflow:hidden}
+  .cover::before{content:"";position:absolute;right:-100px;top:-100px;width:360px;height:360px;border-radius:50%;
+    background:radial-gradient(circle,#FBE3D2 0%,rgba(251,227,210,0) 70%);pointer-events:none}
+  .cover>*{position:relative;z-index:2}
+  .cover .ghost{position:absolute;right:-4px;bottom:-30px;z-index:1;font-family:var(--serif);font-weight:700;font-size:170px;line-height:1;color:rgba(226,87,30,.08);letter-spacing:10px;pointer-events:none;user-select:none}
+  .cover .kicker{display:inline-block;font-size:12.5px;letter-spacing:2.5px;color:var(--accent-ink);font-weight:700;margin-bottom:14px}
+  .cover h1{font-family:var(--serif);color:var(--ink);font-size:clamp(28px,3.1vw,42px);line-height:1.36;margin:0 0 15px}
+  .cover h1 b{color:var(--accent)}
+  .cover .lede{color:var(--ink-2);max-width:33em;margin-bottom:22px}
+  .cover .steps{margin:0}
+  .cover .steps li{color:var(--ink-2)}
+  .cover .steps b{color:var(--ink)}
+  .cover .steps .num{background:var(--accent-soft);border:1px solid #F5C9AC;color:var(--accent)}
+  .cover .privacy{color:var(--ink-3);border-top:1px dashed var(--rule);padding-top:15px;margin-top:20px;max-width:33em}
+  .cover-right{display:flex;flex-direction:column;gap:20px}
+  /* 封面右栏：发丝线分栏，不再是卡套卡 */
+  .cover-sec{padding-top:16px;border-top:1px solid var(--rule)}
+  .cover-sec:first-child{padding-top:0;border-top:none}
+  .cover-sec h2{color:var(--ink);font-size:16px;font-weight:600;margin-bottom:3px}
+  .cover-sec .sub{color:var(--ink-3);font-size:12.5px;margin-bottom:13px}
+  .cover .opt{background:var(--panel);border-color:var(--rule);color:var(--ink)}
+  .cover .opt .d{color:var(--ink-3)}
+  .cover .opt:hover{border-color:#C9BFAD;background:#FFFDF9}
+  .cover .opt.on{border-color:var(--accent);background:var(--accent-soft)}
+  .cover .opt.on .t{color:var(--accent-deep)}
+  .cover .opt .pick{color:var(--accent)}
+  .cover .btn{background:var(--accent);color:#fff;padding:15px 28px;font-size:16px;border-radius:12px;width:100%}
+  .cover .btn:hover{background:var(--accent-deep)}
+  .hazard{position:absolute;left:0;right:0;bottom:0;height:12px;border-radius:2px;opacity:.9;
+    background:repeating-linear-gradient(45deg,var(--accent) 0 16px,var(--stage) 16px 32px)}
+
+  /* ===== 会中盘面：左盘面 + 右侧栏，填满一屏 ===== */
+  .bingo-banner{position:fixed;top:72px;left:50%;transform:translateX(-50%) scale(.9);z-index:20;background:var(--accent);color:#fff;border-radius:12px;padding:13px 22px;font-weight:700;font-size:16px;text-align:center;box-shadow:0 10px 28px rgba(226,87,30,.42);opacity:0;pointer-events:none;transition:.2s}
+  .bingo-banner.show{transform:translateX(-50%) scale(1);opacity:1}
+  .play{flex:1;min-height:0;display:grid;grid-template-columns:1fr 300px;gap:28px}
+  .play-main{min-height:0;display:flex;flex-direction:column}
+  .play-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:12px}
+  .play-head h1{font-size:clamp(20px,2.4vw,28px);margin:0}
+  .timer{font-size:14px;color:var(--ink-2);white-space:nowrap}
+  .timer b{font-family:var(--serif);font-size:22px;color:var(--accent);margin-left:6px}
+  .grid{display:grid;gap:10px;flex:1;min-height:0;grid-auto-rows:1fr}
+  .cell{position:relative;border:1.5px solid var(--rule);border-radius:11px;padding:12px 16px;min-height:0;cursor:pointer;background:var(--panel);font-size:clamp(13px,1.05vw,15px);line-height:1.45;transition:.12s;display:flex;align-items:center;justify-content:center;text-align:center;overflow:hidden;width:100%}
+  .cell:hover{border-color:var(--ink-3)}
+  .cell .dot{position:absolute;right:10px;top:10px;width:9px;height:9px;border-radius:50%;background:var(--ax,#ccc);flex:none}
+  .cell.checked{background:#FFF6F0;border-color:#EBC9B4;box-shadow:none}
+  .cell.checked .txt{font-weight:600;color:var(--ink)}
+  .cell.checked .dot{box-shadow:0 0 0 3px rgba(226,87,30,.18)}
+  .cell.done{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+  .cell.done .dot{background:var(--accent)}
+  .cell.free{cursor:default;background:#F1ECE2;border-style:dashed}
+  .cell.free .dot{background:#A79E8E}
+  .cell .free-tag{display:block;font-size:12px;color:var(--ink-2);font-weight:600;margin-top:4px}
+  .cell:disabled{cursor:default}
+  .cell.flash{animation:fl .6s ease}
+  @keyframes fl{0%{transform:scale(1)}40%{transform:scale(1.05)}100%{transform:scale(1)}}
+  .cell.line-hit{animation:lh .9s ease 2;border-color:var(--accent)!important;box-shadow:0 0 0 3px var(--accent-soft),inset 0 0 0 1px var(--accent);background:#FFF1E8!important}
+  @keyframes lh{0%,100%{transform:translateY(0)}25%{transform:translateY(-5px)}75%{transform:translateY(3px)}}
+  /* 右侧栏 */
+  .play-side{display:flex;flex-direction:column;gap:16px;min-height:0}
+  .side-card{background:var(--panel);border:1px solid var(--rule);border-radius:14px;padding:16px}
+  .side-card .sc-title{font-size:12.5px;color:var(--ink-3);font-weight:600;margin-bottom:14px;letter-spacing:.3px}
+  /* 本局命中进度 */
+  .prog{margin-bottom:16px}
+  .prog .pl{display:flex;justify-content:space-between;font-size:12.5px;color:var(--ink-2);margin-bottom:7px}
+  .prog .pl b{font-family:var(--serif);color:var(--ink)}
+  .prog .pt{height:8px;border-radius:5px;background:var(--rule);overflow:hidden}
+  .prog .pt span{display:block;height:100%;border-radius:5px;background:var(--accent);transition:width .25s}
+  .vlist{display:flex;flex-direction:column;gap:13px}
+  .vrow{display:flex;flex-direction:column;gap:6px}
+  .vrow .top{display:flex;justify-content:space-between;align-items:center;font-size:14px}
+  .vrow .nm{display:flex;align-items:center;gap:7px}
+  .vrow .nm i{width:10px;height:10px;border-radius:50%}
+  .vrow .cnt{font-family:var(--serif);font-weight:700}
+  .vrow .track{height:7px;border-radius:6px;background:var(--rule);overflow:hidden}
+  .vrow .track span{display:block;height:100%;border-radius:6px;transition:width .2s}
+  .lines-note{font-size:13px;color:var(--accent-ink);font-weight:600;text-align:center}
+  .play-side .btnrow{flex-direction:column;margin:0}
+  .play-side .btn{width:100%}
+
+  /* ===== 散会复盘：左右两栏 ===== */
+  .post{flex:1;display:flex;flex-direction:column;gap:20px}
+  .post-head h1{font-size:clamp(24px,3vw,34px)}
+  .post-grid{flex:1;display:grid;grid-template-columns:1.25fr .75fr;gap:24px;align-items:start}
+  .post-grid .card{margin:0}
+  .post-side{display:flex;flex-direction:column;gap:16px}
+  .post-side textarea{width:100%;font:inherit;font-size:15px;padding:12px 14px;border:1.5px solid var(--rule);border-radius:10px;resize:vertical;min-height:120px;background:var(--paper);color:var(--ink)}
+  .post-side textarea:focus{outline:none;border-color:var(--accent)}
+  .field{display:flex;flex-direction:column}
+  .field label{font-size:13px;font-weight:600;margin-bottom:8px;color:var(--ink-2)}
+
+  /* ===== 报告：暖米舞台 + 横排海报（一屏放下，零滚动） ===== */
+  .report-stage{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;overflow:hidden}
+  .poster-fit{width:1240px;height:760px;flex:none;transform-origin:top center}
+  .poster{width:1240px;height:760px;background:var(--panel);border:1px solid var(--rule);border-radius:20px;
+    box-shadow:0 24px 64px rgba(140,110,80,.18);overflow:hidden;display:flex;flex-direction:column}
+  .poster .p-top{padding:20px 30px 14px;display:flex;justify-content:space-between;align-items:flex-end;gap:16px;border-bottom:3px solid var(--accent)}
+  .poster .p-top .pb{font-family:var(--serif);font-size:21px;font-weight:600;color:var(--ink);line-height:1.2}
+  .poster .p-top .pb b{color:var(--accent)}
+  .poster .p-top .pb small{display:block;font-family:var(--sans);font-size:12px;color:var(--ink-3);font-weight:400;margin-top:4px;letter-spacing:1px}
+  .poster .p-top .pk{text-align:right;flex:none}
+  .poster .p-top .pk .t1{font-size:15px;font-weight:700;color:var(--ink);letter-spacing:1px}
+  .poster .p-top .pk .t2{font-size:12px;color:var(--ink-3);margin-top:4px;letter-spacing:.5px}
+  .p-grid{flex:1;min-height:0;display:grid;grid-template-columns:290px 1fr 260px;gap:24px;padding:22px 30px 18px}
+  .p-col{min-height:0;display:flex;flex-direction:column}
+  .p-col-a{justify-content:center;align-items:center;text-align:center;gap:13px}
+  .p-hero .lbl{font-size:12px;color:var(--ink-3);letter-spacing:4px;font-weight:600;margin-bottom:11px}
+  .ring{width:150px;height:150px;margin:0 auto;border-radius:50%;display:flex;align-items:center;justify-content:center;position:relative;
+    background:conic-gradient(var(--rc,#E2571E) 0 var(--rp,0%),#EDE6D9 var(--rp,0%) 100%)}
+  .ring::before{content:"";position:absolute;inset:11px;border-radius:50%;background:var(--panel)}
+  .ring .rin{position:relative;line-height:1}
+  .ring .rin .n{font-family:var(--serif);font-size:46px;font-weight:700;display:block;color:var(--ink)}
+  .ring .rin .u{font-size:12px;color:var(--ink-3);display:block;margin-top:6px}
+  .p-level{display:inline-block;background:var(--rc,#E2571E);color:#fff;font-weight:700;font-size:15px;padding:6px 20px;border-radius:20px;letter-spacing:2px}
+  .p-hero .sub{font-size:12px;color:var(--ink-3);line-height:1.7;margin-top:2px}
+  .p-col-b{gap:16px}
+  /* 四格数据：发丝线数据带，不是四张卡 */
+  .p-stats{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}
+  .p-stat{padding:11px 14px 11px 0;border-right:1px solid var(--rule)}
+  .p-stat:nth-child(2n){border-right:none;padding-left:14px}
+  .p-stat:nth-child(-n+2){border-bottom:1px solid var(--rule)}
+  .p-stat .l{font-size:12px;color:var(--ink-3);letter-spacing:1px}
+  .p-stat .v{font-size:15px;font-weight:600;margin-top:3px;color:var(--ink);line-height:1.4}
+  .p-t{font-size:12px;color:var(--ink-3);font-weight:700;letter-spacing:2px;margin-bottom:9px}
+  .p-axisrow{display:flex;align-items:center;gap:10px;font-size:12.5px;margin-bottom:8px}
+  .p-axisrow:last-child{margin-bottom:0}
+  .p-axisrow .nm{width:38px;color:var(--ink-2);flex:none}
+  .p-axisrow .tr{flex:1;height:8px;border-radius:5px;background:#EDE6D9;overflow:hidden}
+  .p-axisrow .tr span{display:block;height:100%;border-radius:5px}
+  .p-axisrow .c{width:20px;text-align:right;font-family:var(--serif);font-weight:700;flex:none;color:var(--ink)}
+  /* 毒舌评语：编辑式引文带（通栏淡色 + 顶部橙线），不是嵌套卡 */
+  .p-comment{background:var(--accent-soft);border-top:3px solid var(--accent);
+    padding:13px 16px;font-size:13.5px;line-height:1.85;color:#4A3423}
+  .p-comment .ct{display:block;font-size:12px;color:var(--accent-ink);font-weight:700;letter-spacing:2px;margin-bottom:6px}
+  .p-col-c{gap:16px}
+  /* 吐槽与说明：去盒子，发丝线分隔 */
+  .p-quote{font-size:13px;line-height:1.8;color:var(--ink-2)}
+  .p-quote .who{display:block;font-size:12px;color:var(--ink-3);margin-top:6px}
+  .p-tags{display:flex;flex-wrap:wrap;gap:6px}
+  .p-tags .tag{font-size:12px;background:#fff;border:1px solid var(--rule);border-radius:14px;padding:4px 10px;color:var(--ink-2)}
+  .p-note{margin-top:auto;padding-top:12px;border-top:1px dashed var(--rule);font-size:12px;color:var(--ink-3);line-height:1.7}
+  .p-foot{border-top:1px solid var(--rule);padding:10px 30px;display:flex;justify-content:space-between;align-items:center;gap:14px;font-size:12px;color:var(--ink-3)}
+  .p-foot .hz{width:74px;height:9px;border-radius:2px;flex:none;
+    background:repeating-linear-gradient(45deg,var(--accent) 0 8px,#F6F1E8 8px 16px)}
+  .p-foot .mid{flex:1}
+  .report-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;flex:none}
+  .report-actions .btn{background:var(--accent);color:#fff;padding:11px 20px;font-size:14.5px}
+  .report-actions .btn:hover{background:var(--accent-deep)}
+  .report-actions .btn.ghost{background:transparent;color:var(--ink-2);border-color:var(--rule)}
+  .report-actions .btn.ghost:hover{border-color:#C9BFAD;color:var(--ink)}
+  .linkbox{display:flex;gap:8px;width:min(640px,100%)}
+  .linkbox input{flex:1;min-width:0;font:inherit;font-size:12.5px;padding:10px 12px;border:1.5px solid var(--rule);border-radius:9px;background:var(--panel);color:var(--ink-2)}
+  .linkbox .btn.ghost{background:transparent;color:var(--ink-2);border-color:var(--rule)}
+  .toast{position:fixed;left:50%;bottom:30px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:11px 22px;border-radius:24px;font-size:14px;opacity:0;pointer-events:none;transition:.25s;z-index:30}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+  /* ===== 响应式：窄屏堆叠 ===== */
+  @media(max-width:960px){
+    :root{--gutter:32px}
+    .cover{grid-template-columns:1fr;gap:26px;padding:28px 26px}
+    .cover .ghost{font-size:110px;bottom:-18px}
+    .report-stage{overflow:visible;justify-content:flex-start}
+    .poster-fit{width:100%;height:auto;transform:none!important;margin-bottom:0!important}
+    .poster{width:100%;height:auto}
+    .p-grid{grid-template-columns:1fr;gap:20px;padding:20px}
+    .p-col-a{justify-content:flex-start}
+    .p-foot{flex-wrap:wrap}
+    .play{grid-template-columns:1fr}
+    .play-main{min-height:auto}
+    .grid{min-height:440px;grid-auto-rows:minmax(72px,1fr)}
+    .play-side{flex-direction:row;flex-wrap:wrap}
+    .play-side .side-card{flex:1 1 220px}
+    .play-side .btnrow{flex:1 1 100%;flex-direction:row}
+    .post-grid{grid-template-columns:1fr}
+  }
+  @media(max-width:560px){
+    :root{--gutter:20px}
+    .wrap{padding:18px var(--gutter)}
+    .topbar-in{padding:10px var(--gutter)}
+    footer{padding:10px var(--gutter) 14px}
+    .opts.cols-3,.opts.cols-2{grid-template-columns:1fr}
+    .p-stats{grid-template-columns:repeat(2,1fr)}
+    .p-stat:nth-child(-n+2){border-bottom:1px solid var(--rule)}
+    .p-stat:nth-child(2n){border-right:none}
+    .p-hero{padding:20px 16px 16px}
+    .ring{width:140px;height:140px}
+    .ring .rin .n{font-size:42px}
+    .p-body{padding:16px}
+    .p-foot{flex-direction:column;align-items:flex-start;gap:4px}
+    .play-side{flex-direction:column}
+    .play-side .btnrow{flex-direction:column}
+  }
+</style>
+</head>
+<body>
+  <div class="topbar"><div class="topbar-in">
+    <div class="brand">会议<b>翻车</b>现场<small>职场翻车宾果</small></div>
+    <div id="topRight" style="font-size:13px;color:var(--ink-3)"></div>
+  </div></div>
+  <div class="wrap" id="app"></div>
+  <footer>
+    本工具按「会议行为观察」思路自制的娱乐自评，不是心理量表、未做信效度检验，纯属上班摸鱼。所有勾选只存在这台设备，关掉页面或封存后即清除，不联网、不上传。
+  </footer>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+"use strict";
+const AXES=[
+  {key:"derail",name:"跑题",color:"var(--derail)"},
+  {key:"idle",  name:"空转",color:"var(--idle)"},
+  {key:"scope", name:"加码",color:"var(--scope)"},
+  {key:"demo",  name:"劝退",color:"var(--demo)"},
+];
+const AM={derail:0,idle:1,scope:2,demo:3};
+const AX_COLOR={derail:"#E0A526",idle:"#4B6B8A",scope:"#3E8E7E",demo:"#C2503A"};
+
+const ITEMS=[
+  {t:"有人突然聊起昨晚的球赛",a:"derail"},
+  {t:"话题拐到了完全无关的部门八卦",a:"derail"},
+  {t:"翻出三个月前的旧账重新吵",a:"derail"},
+  {t:"有人中途讲了个冗长的人生故事",a:"derail"},
+  {t:"聊起中午吃什么讨论了十分钟",a:"derail"},
+  {t:"临时插播一则私人喜讯并寒暄",a:"derail"},
+  {t:"把会议变成了闲聊茶话会",a:"derail"},
+  {t:"有人分享了一段无关的行业新闻",a:"derail"},
+  {t:"说着说着开始吐槽起别的客户",a:"derail"},
+
+  {t:"开场十分钟还在调试设备",a:"idle"},
+  {t:"同一条结论被重复说了三遍",a:"idle"},
+  {t:"全程没有发过任何议程",a:"idle"},
+  {t:"关键决策被推到了「会后」",a:"idle"},
+  {t:"同一个问题绕圈没人拍板",a:"idle"},
+  {t:"主持人念完PPT就结束了",a:"idle"},
+  {t:"半小时过去没产生任何待办",a:"idle"},
+  {t:"反复确认「大家都明白了吗」",a:"idle"},
+  {t:"有人一直「在听」却毫无回应",a:"idle"},
+
+  {t:"会中又临时加了一个新任务",a:"scope"},
+  {t:"需求在会上一改再改",a:"scope"},
+  {t:"突然拉来一位没背景的人",a:"scope"},
+  {t:"把下个版本功能提前塞进来",a:"scope"},
+  {t:"老板一句「顺便也做一下」",a:"scope"},
+  {t:"范围从A膨胀到了ABCDE",a:"scope"},
+  {t:"临时要求当天就出方案",a:"scope"},
+  {t:"又双叒叕改了交付时间",a:"scope"},
+  {t:"把别组的事也顺手揽过来",a:"scope"},
+
+  {t:"有人被当众点名批评",a:"demo"},
+  {t:"全场陷入令人窒息的沉默",a:"demo"},
+  {t:"领导念了长达二十页的稿子",a:"demo"},
+  {t:"一个明显错误被反复纠结",a:"demo"},
+  {t:"有人偷偷关摄像头摸鱼",a:"demo"},
+  {t:"气氛冷到没人愿意先开口",a:"demo"},
+  {t:"你发现这会根本不用你参加",a:"demo"},
+  {t:"发言被打断三次以上",a:"demo"},
+  {t:"结束没人知道到底定了啥",a:"demo"},
+];
+
+const SIZES={
+  short:{n:3,min:15,label:"短会",desc:"约 15 分钟"},
+  normal:{n:4,min:30,label:"一般会议",desc:"约 30 分钟"},
+  long:{n:5,min:60,label:"长会",desc:"一小时以上"},
+};
+const POST_STATES=[
+  {t:"全员眼神已死",s:8},
+  {t:"有人提前开溜",s:5},
+  {t:"吵到差点拍桌",s:9},
+  {t:"假装认真记笔记",s:4},
+  {t:"意外还真有产出",s:1},
+  {t:"散会后一片死寂",s:7},
+];
+
+const LS_KEY="meeting-collapse-v1";
+let timer=null;
+let state=defaultState();
+
+function defaultState(){
+  return{phase:"setup",sizeKey:"normal",timed:true,side:4,
+    grid:[],checked:[],startTime:0,crashMinute:null,crashCell:null,lines:0,completedLines:[],postStates:[],quip:""};
+}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+function buildGrid(sizeKey){
+  const n=SIZES[sizeKey].n;
+  const pool=shuffle(ITEMS).slice(0,n*n);
+  const grid=pool.map(it=>({text:it.t,axis:it.a,free:false}));
+  const freeIdx=Math.floor(n*n/2); // 3->4, 5->12 (中心)
+  if(n%2===1){grid[freeIdx]={text:"天选一格",axis:null,free:true};}
+  state.grid=grid;state.side=n;
+  state.checked=grid.map(c=>c.free);
+}
+function lineSets(){
+  const s=state.side,sets=[];
+  for(let r=0;r<s;r++){const l=[];for(let c=0;c<s;c++)l.push(r*s+c);sets.push(l);}
+  for(let c=0;c<s;c++){const l=[];for(let r=0;r<s;r++)l.push(r*s+c);sets.push(l);}
+  const d1=[];for(let i=0;i<s;i++)d1.push(i*s+i);sets.push(d1);
+  const d2=[];for(let i=0;i<s;i++)d2.push(i*s+(s-1-i));sets.push(d2);
+  return sets;
+}
+function countCompleted(){
+  let cnt=0;for(const ln of lineSets()){if(ln.every(i=>state.checked[i]))cnt++;}return cnt;
+}
+function axisCounts(){
+  const c=[0,0,0,0];
+  state.grid.forEach((cell,idx)=>{if(!cell.free&&cell.axis!=null&&state.checked[idx])c[AM[cell.axis]]++;});
+  return c;
+}
+function save(){
+  try{localStorage.setItem(LS_KEY,JSON.stringify(state));}catch(e){}
+}
+function clearSave(){
+  try{localStorage.removeItem(LS_KEY);}catch(e){}
+}
+
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+function toast(msg){
+  const t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");
+  clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove("show"),1800);
+}
+
+/* ---------- 渲染 ---------- */
+const app=document.getElementById("app");
+const topRight=document.getElementById("topRight");
+
+function render(){
+  document.body.className="phase-"+state.phase;
+  if(state.phase==="setup")return renderSetup();
+  if(state.phase==="play")return renderPlay();
+  if(state.phase==="post")return renderPost();
+  if(state.phase==="report")return renderReport();
+}
+
+function renderSetup(){
+  topRight.textContent="第 1 步 / 共 3 步";
+  let sizeCards="";
+  for(const k of["short","normal","long"]){
+    const s=SIZES[k];
+    const on=state.sizeKey===k?"on":"";
+    sizeCards+=`<button type="button" class="opt ${on}" data-size="${k}" aria-pressed="${state.sizeKey===k?"true":"false"}"><span class="t">${s.label}</span><span class="d">${s.desc} · ${s.n}×${s.n} 盘面</span><span class="pick" aria-hidden="true">已选 ✓</span></button>`;
+  }
+  let modeCards="";
+  [["timed","会议要开了（计时）","按下开始就计时，连成一线时记下翻车时刻"],
+   ["untimed","会已经翻完了","凭记忆勾，不计时，翻车时刻记为不详"]].forEach(([k,t,d])=>{
+    const on=(state.timed=== (k==="timed"))?"on":"";
+    modeCards+=`<button type="button" class="opt ${on}" data-mode="${k}" aria-pressed="${state.timed===(k==="timed")?"true":"false"}"><span class="t">${t}</span><span class="d">${d}</span><span class="pick" aria-hidden="true">已选 ✓</span></button>`;
+  });
+  app.innerHTML=`
+    <div class="setup">
+      <div class="cover">
+        <div class="ghost" aria-hidden="true">翻车</div>
+        <div class="cover-left">
+          <span class="kicker">职场翻车宾果 · 上班摸鱼自评</span>
+          <h1>这场会，<br>能撑到散场吗？</h1>
+          <p class="lede">盘面上每一格，都是会议里真会发生的事。会中发生了就点一下，横、竖、斜连成一条线，这场会就算当场翻车。散会补两句，生成一份毒舌事故报告。</p>
+          <ul class="steps">
+            <li><span class="num">1</span><span><b>会中</b> · 听到就勾，连成一线就是这场会翻车了</span></li>
+            <li><span class="num">2</span><span><b>散会</b> · 多选现场状况，再留一句吐槽</span></li>
+            <li><span class="num">3</span><span><b>封存</b> · 主因、元凶、翻车指数、毒舌评语一次到齐</span></li>
+          </ul>
+          <p class="privacy">不录音，也不要你输入会议真实内容。盘面只存在这台设备，刷新不丢，封存后即清，不联网、不上传。</p>
+        </div>
+        <div class="cover-right">
+          <div class="cover-sec">
+            <h2>选好这场会的长度</h2>
+            <p class="sub">盘面越大，塞进去的奇葩事越多。</p>
+            <div class="opts cols-3">${sizeCards}</div>
+          </div>
+          <div class="cover-sec">
+            <h2>这场会现在啥状态</h2>
+            <p class="sub">会还没开就计时，开完了就凭记忆玩。</p>
+            <div class="opts cols-2">${modeCards}</div>
+          </div>
+          <div class="btnrow"><button class="btn" id="startBtn">开始这场会</button></div>
+        </div>
+      </div>
+      <div class="hazard" aria-hidden="true"></div>
+    </div>`;
+  app.querySelectorAll("[data-size]").forEach(el=>el.onclick=()=>{state.sizeKey=el.dataset.size;render();});
+  app.querySelectorAll("[data-mode]").forEach(el=>el.onclick=()=>{state.timed=(el.dataset.mode==="timed");render();});
+  document.getElementById("startBtn").onclick=startGame;
+}
+
+function startGame(){
+  buildGrid(state.sizeKey);
+  state.phase="play";state.startTime=Date.now();state.crashMinute=null;state.crashCell=null;state.lines=0;state.completedLines=[];state.postStates=[];state.quip="";
+  save();render();
+  if(state.timed){
+    timer=setInterval(()=>{const e=document.getElementById("clock");if(e)e.textContent=fmtElapsed();},1000);
+  }
+}
+function fmtElapsed(){
+  const ms=Date.now()-state.startTime;const s=Math.floor(ms/1000);
+  const m=Math.floor(s/60),ss=s%60;return m+" 分 "+(ss<10?"0":"")+ss+" 秒";
+}
+
+function renderPlay(){
+  topRight.textContent="会中 · 听到就勾";
+  const clockHtml=state.timed?`<div class="timer">已开 <b id="clock">${fmtElapsed()}</b></div>`:`<div class="timer">记忆模式 · 不计时</div>`;
+  const gridStyle=`grid-template-columns:repeat(${state.side},1fr)`;
+  const doneSet=new Set(); state.completedLines.forEach(s=>s.split(",").forEach(i=>doneSet.add(+i)));
+  let cells="";
+  state.grid.forEach((cell,idx)=>{
+    const checked=state.checked[idx]?"checked":"";
+    const free=cell.free?"free":"";
+    const done=doneSet.has(idx)&&!cell.free?"done":"";
+    const ax=cell.free?"#A79E8E":AX_COLOR[cell.axis];
+    if(cell.free){
+      cells+=`<button type="button" class="cell free" disabled style="--ax:${ax}"><span class="dot" aria-hidden="true"></span><span class="txt">${esc(cell.text)}<br><span class="free-tag">免费格 · 默认勾中</span></span></button>`;
+    }else{
+      cells+=`<button type="button" class="cell ${checked} ${done}" data-i="${idx}" aria-pressed="${state.checked[idx]?"true":"false"}" style="--ax:${ax}"><span class="dot" aria-hidden="true"></span><span class="txt">${esc(cell.text)}</span></button>`;
+    }
+  });
+  const cnt=axisCounts();
+  const maxC=Math.max(1,cnt[0],cnt[1],cnt[2],cnt[3]);
+  let vlist="";
+  AXES.forEach((a,i)=>{
+    const pct=cnt[i]?Math.round(cnt[i]/maxC*100):0;
+    vlist+=`<div class="vrow"><div class="top"><span class="nm"><i style="background:${AX_COLOR[a.key]}"></i>${a.name}</span><span class="cnt">${cnt[i]}</span></div><div class="track"><span style="width:${pct}%;background:${AX_COLOR[a.key]}"></span></div></div>`;
+  });
+  const total=state.grid.filter(c=>!c.free).length;
+  const hit=state.grid.reduce((a,c,idx)=>a+((!c.free&&state.checked[idx])?1:0),0);
+  const hitPct=total?Math.round(hit/total*100):0;
+  const linesNote=state.lines>0?`已连成 ${state.lines} 条线 · 翻车 ${state.lines} 次`:`还没连成线，稳住`;
+  app.innerHTML=`
+    <div class="play">
+      <div class="play-main">
+        <div class="play-head">
+          <h1>${SIZES[state.sizeKey].label}进行中</h1>
+          ${clockHtml}
+        </div>
+        <p class="lede" style="margin:0 0 14px">发生了就点一格，手滑再点一次取消。横排、竖列或斜线连成一线，当场弹出翻车提示。</p>
+        <div class="grid" style="${gridStyle}">${cells}</div>
+      </div>
+      <aside class="play-side">
+        <div class="side-card">
+          <div class="prog">
+            <div class="pl"><span>本局命中</span><span><b>${hit}</b> / ${total} 格</span></div>
+            <div class="pt"><span style="width:${hitPct}%"></span></div>
+          </div>
+          <div class="sc-title">四类损伤 · 实时命中</div>
+          <div class="vlist">${vlist}</div>
+        </div>
+        <div class="lines-note">${linesNote}</div>
+        <div class="btnrow">
+          <button class="btn" id="endBtn">散会，开始复盘</button>
+          <button class="btn ghost" id="resetBtn">重开</button>
+        </div>
+      </aside>
+    </div>
+    <div class="bingo-banner" id="bingoBanner" role="status" aria-live="polite"></div>`;
+  app.querySelectorAll(".cell:not(.free)").forEach(el=>el.onclick=()=>toggleCell(+el.dataset.i,el));
+  document.getElementById("endBtn").onclick=()=>{if(timer)clearInterval(timer);state.phase="post";save();render();};
+  document.getElementById("resetBtn").onclick=resetAll;
+}
+
+function currentCompletedLines(){
+  return lineSets().filter(ln=>ln.every(i=>state.checked[i])).map(ln=>ln.join(","));
+}
+function toggleCell(i,el){
+  state.checked[i]=!state.checked[i];
+  const now=countCompleted();
+  const cur=currentCompletedLines();
+  const prevSet=new Set(state.completedLines);
+  const fresh=cur.filter(s=>!prevSet.has(s));
+  if(state.checked[i]&&now>state.lines&&state.crashMinute===null&&state.timed){
+    state.crashMinute=Math.max(1,Math.round((Date.now()-state.startTime)/60000));
+    state.crashCell=state.grid[i].text;
+  }
+  state.lines=now;
+  state.completedLines=cur;
+  if(state.checked[i]&&el){el.classList.remove("flash");void el.offsetWidth;el.classList.add("flash");}
+  save();renderPlay();
+  if(fresh.length) onLineComplete(fresh);
+}
+function onLineComplete(fresh){
+  const banner=document.getElementById("bingoBanner");
+  const minTxt=state.crashMinute!=null?("第 "+state.crashMinute+" 分钟"):"记忆模式";
+  if(banner){
+    banner.textContent="🚧 连成一线！这场会 "+minTxt+" 翻车了";
+    banner.classList.add("show");
+    clearTimeout(banner._h);
+    banner._h=setTimeout(()=>banner.classList.remove("show"),2800);
+  }
+  fresh.forEach(s=>s.split(",").forEach(idx=>{
+    const c=document.querySelector('.cell[data-i="'+idx+'"]');
+    if(c)c.classList.add("line-hit");
+  }));
+  beep();
+}
+let _audioCtx=null;
+function beep(){
+  if(typeof window==="undefined")return;
+  try{
+    _audioCtx=_audioCtx||new (window.AudioContext||window.webkitAudioContext)();
+    const t=_audioCtx.currentTime;
+    [[660,0,0.26,0.15],[880,0.12,0.42,0.12]].forEach(([f,o,d,gv])=>{
+      const o2=_audioCtx.createOscillator(),g=_audioCtx.createGain();
+      o2.type="square";o2.frequency.value=f;
+      g.gain.setValueAtTime(0.0001,t+o);
+      g.gain.exponentialRampToValueAtTime(gv,t+o+0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001,t+d);
+      o2.connect(g);g.connect(_audioCtx.destination);
+      o2.start(t+o);o2.stop(t+d);
+    });
+  }catch(e){}
+}
+
+function renderPost(){
+  topRight.textContent="散会 · 写两句";
+  let opts="";
+  POST_STATES.forEach((p,i)=>{
+    const on=state.postStates.includes(i)?"on":"";
+    opts+=`<button type="button" class="opt ${on}" data-ps="${i}" aria-pressed="${state.postStates.includes(i)?"true":"false"}"><span class="t">${p.t}</span><span class="pick" aria-hidden="true">已选 ✓</span></button>`;
+  });
+  const picked=state.postStates.length;
+  app.innerHTML=`
+    <div class="post">
+      <div class="post-head">
+        <span class="step-tag">散会复盘</span>
+        <h1>补两句，封存事故报告</h1>
+        <p class="lede">勾完了，选选散场时的现场状况（可多选），再留一句吐槽。只存在本机。</p>
+      </div>
+      <div class="post-grid">
+        <div class="card">
+          <h2>散场时现场啥状况 · 已选 ${picked} 项</h2>
+          <p class="sub">多选，选到啥算啥。</p>
+          <div class="opts cols-2">${opts}</div>
+        </div>
+        <div class="post-side">
+          <div class="card">
+            <h2>补一句吐槽（可选）</h2>
+            <p class="sub">比如：下次这种会能不能直接发文档……</p>
+            <textarea id="quip" maxlength="120" placeholder="此刻的心里话……">${esc(state.quip)}</textarea>
+          </div>
+          <div class="btnrow">
+            <button class="btn" id="sealBtn" ${picked?"":"disabled"}>封存报告</button>
+            <button class="btn ghost" id="backBtn">回到盘面</button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  app.querySelectorAll("[data-ps]").forEach(el=>el.onclick=()=>{
+    const i=+el.dataset.ps;
+    if(state.postStates.includes(i))state.postStates=state.postStates.filter(x=>x!==i);
+    else state.postStates.push(i);
+    save();renderPost();
+  });
+  const q=document.getElementById("quip");
+  q.oninput=()=>{state.quip=q.value;save();};
+  document.getElementById("sealBtn").disabled=picked===0;
+  document.getElementById("sealBtn").onclick=()=>{state.phase="report";save();render();};
+  document.getElementById("backBtn").onclick=()=>{state.phase="play";render();};
+}
+
+function buildReport(){
+  const cnt=axisCounts();
+  const total=state.grid.filter(c=>!c.free).length;
+  const checkedNonFree=state.grid.reduce((a,c,idx)=>a+((!c.free&&state.checked[idx])?1:0),0);
+  const ratio=total?checkedNonFree/total:0;
+  let max=-1,dom=0;cnt.forEach((v,i)=>{if(v>max){max=v;dom=i;}});
+  let weapon="";
+  for(let i=0;i<state.grid.length;i++){if(!state.grid[i].free&&state.checked[i]&&state.grid[i].axis===AXES[dom].key){weapon=state.grid[i].text;break;}}
+  if(!weapon){for(let i=0;i<state.grid.length;i++){if(!state.grid[i].free&&state.checked[i]){weapon=state.grid[i].text;break;}}}
+  const severity=state.postStates.length?Math.max.apply(null,state.postStates.map(i=>POST_STATES[i].s)):5;
+  let crashFactor=0;
+  if(state.timed&&state.crashMinute!=null){
+    const maxMin=SIZES[state.sizeKey].min;
+    crashFactor=Math.max(0,(1-state.crashMinute/maxMin))*10;
+  }
+  let idx=ratio*45+Math.min(state.lines,5)*6+max*2+severity+crashFactor;
+  idx=Math.max(0,Math.min(100,Math.round(idx)));
+  let level="轻微剐蹭",lvc="还好";
+  if(idx>=76){level="车毁人亡";lvc="彻底崩盘";}
+  else if(idx>=51){level="彻底翻车";lvc="严重";}
+  else if(idx>=26){level="半翻不翻";lvc="一般";}
+  const commentary=buildCommentary({dom,idx,level,weapon,lines:state.lines,crashMinute:state.crashMinute});
+  return{cnt,total,checkedNonFree,ratio,dom,weapon,severity,idx,level,lvc,commentary};
+}
+
+function buildCommentary(r){
+  const axisName=AXES[r.dom].name;
+  const pick=arr=>arr[Math.floor(Math.random()*arr.length)];
+  const lvlOpen={
+    "车毁人亡":["这场会已经不是翻车，是原地爆炸，连救援都来不及。","标准的车毁人亡，建议直接申报工伤。","这哪是开会，这是集体献祭，还自带焚化炉。"],
+    "彻底翻车":["教科书级别的翻车现场，建议纳入新人培训反面教材。","稳稳的翻车，连水花都溅得这么标准。","一场会开出了事故报告的规格，本事。"],
+    "半翻不翻":["命保住了，魂没了，属于钝刀子割肉。","勉强没死透，但已经没人想活了。","撑是撑住了，全靠大家假装还有气。"],
+    "轻微剐蹭":["居然撑住了，建议你顺手买张彩票。","这点伤也配叫翻车？顶多蹭了层漆。","几乎全身而退，可见这场会本来也没打算干正事。"]
+  };
+  const axisJab={
+    "跑题":["全程没聊过正事，聊的都是别人家的闲天和午饭吃啥。","主线任务一个没碰，支线剧情倒开了八条。","会开到最后，连原本要聊啥都忘了。"],
+    "空转":["开了一个钟头，产出为零，能耗为负。","结论永远在「会后」，会中永远在打转。","这场会最大的成果，是证明了时间确实会流逝。"],
+    "加码":["会开到一半，活又凭空多了三件。","需求像癌细胞，开会即扩散。","别人开会布置任务，你这开会制造任务。"],
+    "劝退":["这场会唯一的作用，是把所有人的积极性按在地上摩擦。","散会时没人想动，因为灵魂已经留在会议室了。","开完这场会，离职的念头比笔记还清晰。"]
+  };
+  const weaponLine=r.weapon?("最致命的一击来自那句「"+r.weapon+"」——听到就该直接散了。"):"";
+  const timeLine=(r.crashMinute!=null)?
+    (r.crashMinute<=5?"开场五分钟就崩，连铺垫都懒得做。":"熬到快散才翻，属于慢性折磨。"):
+    "连几点翻的都记不清，可见会多得已经麻木。";
+  const extra=(r.lines>=3)?"还连了 "+r.lines+" 条线，这是冲着团灭去的。":"";
+  return [pick(lvlOpen[r.level]||lvlOpen["半翻不翻"]),pick(axisJab[axisName]||axisJab["空转"]),weaponLine,timeLine,extra].filter(Boolean).join("");
+}
+
+/* ---------- 海报出图（Canvas，离线生成 PNG） ---------- */
+function posterDateStr(){
+  const d=new Date();
+  return d.getFullYear()+"."+String(d.getMonth()+1).padStart(2,"0")+"."+String(d.getDate()).padStart(2,"0");
+}
+function roundRect(g,x,y,w,h,r){
+  g.beginPath();g.moveTo(x+r,y);
+  g.arcTo(x+w,y,x+w,y+h,r);g.arcTo(x+w,y+h,x,y+h,r);
+  g.arcTo(x,y+h,x,y,r);g.arcTo(x,y,x+w,y,r);g.closePath();
+}
+function measureLines(g,text,maxW){
+  let lines=[],line="";
+  for(const ch of String(text==null?"":text)){
+    if(g.measureText(line+ch).width>maxW&&line){lines.push(line);line=ch;}
+    else line+=ch;
+  }
+  if(line)lines.push(line);
+  return lines.length?lines:[""];
+}
+function renderPosterCanvas(r){
+  const W=2480,H=1520,M=56,PAD=48;
+  const INK="#37332B",INK2="#5C564C",INK3="#6F695E",RULE="#E8E1D3",ACCENT="#E2571E",
+        ACCENT_INK="#B33F14",SOFT="#FBE9DF",CREAM="#FBF8F2",STAGE="#F6F1E8",CARD="#FFFFFF",CTXT="#4A3423";
+  const SERIF='"Songti SC","Noto Serif SC",Georgia,serif';
+  const SANS='"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif';
+  const ringC=r.idx>=76?"#C2503A":r.idx>=51?ACCENT:r.idx>=26?"#E0A526":"#3E8E7E";
+  const cv=document.createElement("canvas");cv.width=W;cv.height=H;
+  const g=cv.getContext("2d");
+  g.textBaseline="alphabetic";
+  /* 舞台底 + 白卡 */
+  g.fillStyle=STAGE;g.fillRect(0,0,W,H);
+  g.fillStyle=CARD;roundRect(g,M,M,W-M*2,H-M*2,36);g.fill();
+  g.strokeStyle=RULE;g.lineWidth=2;roundRect(g,M,M,W-M*2,H-M*2,36);g.stroke();
+  const x0=M+PAD,iw=W-M*2-PAD*2;
+  /* 头部 */
+  g.textAlign="left";g.font="700 42px "+SERIF;
+  let hx=x0;
+  g.fillStyle=INK;g.fillText("会议",hx,152);hx+=g.measureText("会议").width;
+  g.fillStyle=ACCENT;g.fillText("翻车",hx,152);hx+=g.measureText("翻车").width;
+  g.fillStyle=INK;g.fillText("现场",hx,152);
+  g.font="400 24px "+SANS;g.fillStyle=INK3;g.fillText("职场翻车宾果 · 上班摸鱼自评",x0,194);
+  g.textAlign="right";g.font="700 30px "+SANS;g.fillStyle=INK;
+  g.fillText("事故报告",x0+iw,142);
+  g.font="400 24px "+SANS;g.fillStyle=INK3;g.fillText(posterDateStr(),x0+iw,184);
+  g.textAlign="left";
+  g.fillStyle=ACCENT;g.fillRect(x0,216,iw,6);
+  const gy=266,footerTop=H-M-PAD-78;
+  /* ===== 列 A：主视觉（圆环指数） ===== */
+  const cxA=x0+279;
+  const heroH=34+22+300+22+64+22+84;
+  const hy=gy+Math.max(0,((footerTop-24-gy)-heroH)/2);
+  g.textAlign="center";g.font="600 24px "+SANS;g.fillStyle=INK3;
+  g.fillText("翻 车 指 数",cxA,hy+26);
+  const cyA=hy+34+22+150;
+  g.lineWidth=26;g.strokeStyle="#EDE6D9";g.lineCap="butt";
+  g.beginPath();g.arc(cxA,cyA,150,0,Math.PI*2);g.stroke();
+  if(r.idx>0){
+    g.strokeStyle=ringC;g.lineCap="round";
+    g.beginPath();g.arc(cxA,cyA,150,-Math.PI/2,-Math.PI/2+Math.PI*2*(r.idx/100));g.stroke();
+  }
+  g.fillStyle=INK;g.font="700 92px "+SERIF;g.fillText(String(r.idx),cxA,cyA+28);
+  g.font="400 24px "+SANS;g.fillStyle=INK3;g.fillText("/ 100",cxA,cyA+74);
+  const py=hy+34+22+300+22;
+  g.font="700 30px "+SANS;
+  const lvW=g.measureText(r.level).width+80;
+  g.fillStyle=ringC;roundRect(g,cxA-lvW/2,py,lvW,72,36);g.fill();
+  g.fillStyle="#FFFFFF";g.fillText(r.level,cxA,py+48);
+  g.font="400 24px "+SANS;g.fillStyle=INK3;
+  g.fillText(SIZES[state.sizeKey].label+" · 命中 "+r.checkedNonFree+"/"+r.total+" 格",cxA,py+104);
+  g.fillText("连成 "+state.lines+" 条线 · "+(state.crashMinute!=null?("第 "+state.crashMinute+" 分钟"):"记忆模式")+"翻车",cxA,py+144);
+  /* ===== 列 B：发丝线数据带 + 损伤分布 + 毒舌评语 ===== */
+  const bx=x0+606,bw=1120;
+  const stats=[["主因",AXES[r.dom].name],["元凶",r.weapon||"——"],
+    ["翻车时刻",state.crashMinute!=null?("第 "+state.crashMinute+" 分钟"):"记忆模式"],
+    ["散场现场",state.postStates.length?(POST_STATES[state.postStates[0]].t+(state.postStates.length>1?(" 等 "+state.postStates.length+" 项"):"")):"未填"]];
+  const cw=bw/2,ch=108;
+  g.strokeStyle=RULE;g.lineWidth=2;
+  g.beginPath();
+  g.moveTo(bx,gy);g.lineTo(bx+bw,gy);
+  g.moveTo(bx,gy+ch*2);g.lineTo(bx+bw,gy+ch*2);
+  g.moveTo(bx+cw,gy);g.lineTo(bx+cw,gy+ch*2);
+  g.moveTo(bx,gy+ch);g.lineTo(bx+bw,gy+ch);
+  g.stroke();
+  stats.forEach((s,i)=>{
+    const sx=bx+(i%2)*cw,sy=gy+Math.floor(i/2)*ch;
+    const px=(i%2===1?56:28);
+    g.textAlign="left";g.font="400 24px "+SANS;g.fillStyle=INK3;g.fillText(s[0],sx+px,sy+40);
+    let fs=30;g.font="700 "+fs+"px "+SANS;
+    while(g.measureText(s[1]).width>cw-56&&fs>22){fs-=2;g.font="700 "+fs+"px "+SANS;}
+    g.fillStyle=INK;g.fillText(s[1],sx+px,sy+84);
+  });
+  let by=gy+ch*2+40;
+  g.font="700 24px "+SANS;g.fillStyle=INK3;g.fillText("四 类 损 伤 分 布",bx,by+24);
+  by+=48;
+  const maxC=Math.max(1,r.cnt[0],r.cnt[1],r.cnt[2],r.cnt[3]);
+  const trW=bw-100-130;
+  AXES.forEach((a,i)=>{
+    const pct=r.cnt[i]/maxC;
+    g.textAlign="left";g.font="400 25px "+SANS;g.fillStyle=INK2;g.fillText(a.name,bx,by+30);
+    g.fillStyle="#EDE6D9";roundRect(g,bx+100,by+12,trW,16,8);g.fill();
+    g.fillStyle=AX_COLOR[a.key];roundRect(g,bx+100,by+12,Math.max(16,trW*pct),16,8);g.fill();
+    g.textAlign="right";g.font="700 30px "+SERIF;g.fillStyle=INK;g.fillText(String(r.cnt[i]),bx+bw,by+30);
+    g.textAlign="left";
+    by+=60;
+  });
+  by+=32;
+  g.font="500 27px "+SANS;
+  let cLines=measureLines(g,r.commentary,bw-64);
+  const maxLines=Math.max(2,Math.floor((footerTop-24-by-100)/50));
+  const truncated=cLines.length>maxLines;
+  if(truncated)cLines=cLines.slice(0,maxLines);
+  const cbh=100+cLines.length*50;
+  g.fillStyle=SOFT;g.fillRect(bx,by,bw,cbh);
+  g.fillStyle=ACCENT;g.fillRect(bx,by,bw,8);
+  g.font="700 24px "+SANS;g.fillStyle=ACCENT_INK;g.fillText("事故鉴定科 · 不留情面",bx+32,by+46);
+  g.font="500 27px "+SANS;g.fillStyle=CTXT;
+  let cy=by+96;
+  cLines.forEach((ln,i)=>{g.fillText(ln+(i===cLines.length-1&&truncated?"……":""),bx+32,cy);cy+=50;});
+  /* ===== 列 C：吐槽 + 标签 + 说明（去盒子，发丝线） ===== */
+  const cx=x0+1774,cw2=500;
+  let cyy=gy;
+  g.font="700 24px "+SANS;g.fillStyle=INK3;g.fillText("你的吐槽",cx,cyy+24);cyy+=52;
+  const quipTxt=state.quip.trim()||"这场会你没留话，沉默也是一种态度。";
+  g.font="500 26px "+SANS;
+  const qLines=measureLines(g,quipTxt,cw2-56);
+  g.fillStyle=INK2;
+  qLines.forEach((ln,i)=>{g.fillText(ln,cx+28,cyy+i*46);});
+  cyy+=qLines.length*46+28;
+  g.font="700 24px "+SANS;g.fillStyle=INK3;g.fillText("散场现场",cx,cyy+24);cyy+=52;
+  const tags=state.postStates.map(i=>POST_STATES[i].t);
+  g.font="500 24px "+SANS;
+  let tx=cx,ty=cyy;
+  tags.forEach(t=>{
+    const tw=g.measureText(t).width+40;
+    if(tx+tw>cx+cw2){tx=cx;ty+=68;}
+    g.fillStyle="#FFFFFF";roundRect(g,tx,ty,tw,58,29);g.fill();
+    g.strokeStyle=RULE;g.lineWidth=2;roundRect(g,tx,ty,tw,58,29);g.stroke();
+    g.fillStyle=INK2;g.fillText(t,tx+20,ty+40);
+    tx+=tw+14;
+  });
+  if(!tags.length){
+    g.fillStyle=INK3;g.font="400 24px "+SANS;g.fillText("（未填现场状况）",cx,ty+40);
+  }
+  const noteTxt="复盘链接只带你的勾选、现场状况和吐槽，不含任何会议真实内容。本报告由上班摸鱼生成，纯属娱乐。";
+  g.font="400 24px "+SANS;
+  const nLines=measureLines(g,noteTxt,cw2-56);
+  const nbh=20+nLines.length*40;
+  const nTop=footerTop-24-nbh;
+  g.setLineDash([10,8]);g.strokeStyle=RULE;g.lineWidth=2;
+  g.beginPath();g.moveTo(cx,nTop);g.lineTo(cx+cw2,nTop);g.stroke();g.setLineDash([]);
+  g.fillStyle=INK3;let ny=nTop+48;
+  nLines.forEach(ln=>{g.fillText(ln,cx+28,ny);ny+=40;});
+  /* ===== 底带 ===== */
+  g.strokeStyle=RULE;g.lineWidth=2;
+  g.beginPath();g.moveTo(x0,footerTop);g.lineTo(x0+iw,footerTop);g.stroke();
+  g.save();
+  roundRect(g,x0,footerTop+28,148,18,4);g.clip();
+  g.fillStyle=ACCENT;g.fillRect(x0,footerTop+28,148,18);
+  g.strokeStyle="#FFFFFF";g.lineWidth=6;
+  for(let i=-20;i<180;i+=26){g.beginPath();g.moveTo(x0+i,footerTop+50);g.lineTo(x0+i+24,footerTop+24);g.stroke();}
+  g.restore();
+  g.textAlign="left";g.font="400 24px "+SANS;g.fillStyle=INK3;
+  g.fillText("数据只存在本机 · 不联网不上传 · 不是心理量表，纯属娱乐自评",x0+172,footerTop+44);
+  g.textAlign="right";
+  g.fillText("车祸大会Bingo · "+posterDateStr(),x0+iw,footerTop+44);
+  return cv;
+}
+function savePosterPNG(r){
+  try{
+    const cv=renderPosterCanvas(r);
+    const a=document.createElement("a");
+    a.download="事故报告_"+posterDateStr()+".png";
+    a.href=cv.toDataURL("image/png");
+    document.body.appendChild(a);a.click();a.remove();
+    toast("报告图片已保存，拿去传播吧");
+  }catch(e){toast("生成图片失败，可直接截图报告区");}
+}
+
+function renderReport(){
+  if(timer)clearInterval(timer);
+  topRight.textContent="事故报告";
+  const r=buildReport();
+  const ringC=r.idx>=76?"#C2503A":r.idx>=51?"#E2571E":r.idx>=26?"#E0A526":"#3E8E7E";
+  const crashText=state.crashMinute!=null?("第 "+state.crashMinute+" 分钟"):"记忆模式";
+  let axisRows="";
+  const maxC=Math.max(1,r.cnt[0],r.cnt[1],r.cnt[2],r.cnt[3]);
+  AXES.forEach((a,i)=>{
+    const pct=Math.round(r.cnt[i]/maxC*100);
+    axisRows+=`<div class="p-axisrow"><span class="nm">${a.name}</span><span class="tr"><span style="width:${pct}%;background:${AX_COLOR[a.key]}"></span></span><span class="c">${r.cnt[i]}</span></div>`;
+  });
+  const quipHtml=state.quip.trim()?`<div class="p-quote">${esc(state.quip.trim())}<span class="who">—— 你的会后吐槽</span></div>`:`<div class="p-quote">（这场会你没留话，沉默也是一种态度）</div>`;
+  const postTags=state.postStates.length?`<div class="p-tags">${state.postStates.map(i=>`<span class="tag">${POST_STATES[i].t}</span>`).join("")}</div>`:`<div class="p-tags"><span class="tag" style="color:var(--ink-3)">（未填现场状况）</span></div>`;
+  const wv=r.weapon||"——";
+  const wFont=r.weapon&&r.weapon.length>10?"12px":"14px";
+  const firstPost=state.postStates.length?(POST_STATES[state.postStates[0]].t+(state.postStates.length>1?(" 等 "+state.postStates.length+" 项"):"")):"未填";
+  const psFont=state.postStates.length>1?"12px":"14px";
+  app.innerHTML=`
+    <div class="report-stage">
+      <div class="poster-fit" id="posterFit">
+        <div class="poster">
+          <div class="p-top">
+            <div class="pb">会议<b>翻车</b>现场<small>职场翻车宾果 · 上班摸鱼自评</small></div>
+            <div class="pk"><div class="t1">事故报告</div><div class="t2">${posterDateStr()}</div></div>
+          </div>
+          <div class="p-grid">
+            <div class="p-col p-col-a">
+              <div class="p-hero">
+                <div class="lbl">翻 车 指 数</div>
+                <div class="ring" style="--rp:${r.idx}%;--rc:${ringC}"><div class="rin"><span class="n">${r.idx}</span><span class="u">/ 100</span></div></div>
+                <div class="p-level" style="--rc:${ringC}">${r.level}</div>
+                <div class="sub">${SIZES[state.sizeKey].label} · 命中 ${r.checkedNonFree}/${r.total} 格<br>连成 ${state.lines} 条线 · ${crashText}翻车</div>
+              </div>
+            </div>
+            <div class="p-col p-col-b">
+              <div class="p-stats">
+                <div class="p-stat"><div class="l">主因</div><div class="v">${AXES[r.dom].name}</div></div>
+                <div class="p-stat"><div class="l">元凶</div><div class="v" style="font-size:${wFont}">${esc(wv)}</div></div>
+                <div class="p-stat"><div class="l">翻车时刻</div><div class="v">${crashText}</div></div>
+                <div class="p-stat"><div class="l">散场现场</div><div class="v" style="font-size:${psFont}">${esc(firstPost)}</div></div>
+              </div>
+              <div>
+                <div class="p-t">四类损伤分布</div>
+                ${axisRows}
+              </div>
+              <div style="margin-top:auto">
+                <div class="p-t">复盘评语 · 毒舌版</div>
+                <div class="p-comment"><span class="ct">事故鉴定科 · 不留情面</span>${esc(r.commentary)}</div>
+              </div>
+            </div>
+            <div class="p-col p-col-c">
+              <div>
+                <div class="p-t">你的吐槽</div>
+                ${quipHtml}
+              </div>
+              <div>
+                <div class="p-t">散场现场</div>
+                ${postTags}
+              </div>
+              <div class="p-note">复盘链接只带你的勾选、现场状况和吐槽，不含任何会议真实内容。本报告由上班摸鱼生成，纯属娱乐。</div>
+            </div>
+          </div>
+          <div class="p-foot">
+            <span class="hz"></span>
+            <span class="mid">数据只存在本机 · 不联网不上传 · 不是心理量表，纯属娱乐自评</span>
+            <span>车祸大会Bingo · ${posterDateStr()}</span>
+          </div>
+        </div>
+      </div>
+      <div class="report-actions">
+        <button class="btn" id="saveBtn">保存报告图片</button>
+        <button class="btn ghost" id="linkBtn">复制复盘链接</button>
+        <button class="btn ghost" id="againBtn">再来一场</button>
+      </div>
+      <div class="linkbox" style="display:none" id="linkWrap">
+        <input id="linkInput" readonly><button class="btn ghost" id="copyLink">复制</button>
+      </div>
+    </div>`;
+  document.getElementById("saveBtn").onclick=()=>savePosterPNG(r);
+  document.getElementById("linkBtn").onclick=showLink;
+  document.getElementById("againBtn").onclick=resetAll;
+  fitPoster();
+}
+/* 一屏适配：横排海报按视口等比缩放，保证零滚动；左右留足安全边距，不贴边 */
+function fitPoster(){
+  const fit=document.getElementById("posterFit");
+  if(!fit)return;
+  if(window.matchMedia&&window.matchMedia("(max-width:960px)").matches){
+    fit.style.transform="";fit.style.marginBottom="";return;
+  }
+  const vw=window.innerWidth||1280,vh=window.innerHeight||820;
+  /* 与 CSS --gutter:clamp(32px,5vw,88px) 保持一致：海报两侧至少留这么多 */
+  const gutter=Math.max(32,Math.min(88,vw*0.05));
+  /* 实测页面固有高度：顶栏 + 页脚 + 主容器上下内边距 + 动作行与间距 */
+  const tb=document.querySelector(".topbar"),ft=document.querySelector("footer"),ra=document.querySelector(".report-actions");
+  const chrome=(tb&&tb.offsetHeight?tb.offsetHeight:53)+(ft&&ft.offsetHeight?ft.offsetHeight:48)+44+12+(ra&&ra.offsetHeight?ra.offsetHeight:44);
+  const availH=Math.max(320,vh-chrome);
+  const availW=Math.min(vw-gutter*2,1240);
+  let s=Math.max(.45,Math.min(1,availH/760,availW/1240));
+  s=Math.round(s*1000)/1000;
+  fit.style.transform="scale("+s+")";
+  fit.style.marginBottom=(-(760*(1-s)))+"px";
+}
+if(typeof window!=="undefined"&&window.addEventListener)window.addEventListener("resize",fitPoster);
+
+function showLink(){
+  const payload={sk:state.sizeKey,t:state.timed,g:state.grid.map(c=>[c.text,c.axis,c.free?1:0]),c:state.checked,cm:state.crashMinute,cc:state.crashCell,ps:state.postStates,q:state.quip};
+  const enc=btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
+  const url=location.origin+location.pathname+"#r="+enc;
+  const wrap=document.getElementById("linkWrap");
+  wrap.style.display="flex";
+  const inp=document.getElementById("linkInput");inp.value=url;
+  copyText(url);
+  toast("复盘链接已复制到剪贴板");
+}
+function copyText(t){
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).catch(()=>{});}
+  else{const ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");}catch(e){}document.body.removeChild(ta);}
+}
+
+function resetAll(){
+  if(timer)clearInterval(timer);
+  clearSave();
+  state=defaultState();
+  history.replaceState(null,"",location.pathname);
+  render();
+}
+
+/* ---------- 载入：分享链接 or 本地存档 ---------- */
+function loadFromHash(){
+  if(!location.hash||location.hash.indexOf("#r=")!==0)return false;
+  try{
+    const enc=location.hash.slice(3);
+    const p=JSON.parse(decodeURIComponent(escape(atob(enc))));
+    state=defaultState();
+    state.sizeKey=p.sk||"normal";state.timed=!!p.t;
+    state.grid=(p.g||[]).map(x=>({text:x[0],axis:x[1]||null,free:!!x[2]}));
+    state.side=Math.sqrt(state.grid.length);
+    state.checked=p.c||state.grid.map(c=>c.free);
+    state.crashMinute=p.cm!=null?p.cm:null;state.crashCell=p.cc||null;
+    state.postStates=Array.isArray(p.ps)?p.ps:(typeof p.ps==="number"&&p.ps>=0?[p.ps]:[]);state.quip=p.q||"";
+    state.phase="report";
+    return true;
+  }catch(e){return false;}
+}
+function loadFromSave(){
+  try{
+    const raw=localStorage.getItem(LS_KEY);if(!raw)return false;
+    const s=JSON.parse(raw);
+    if(s&&s.grid&&s.grid.length){state=Object.assign(defaultState(),s);return true;}
+  }catch(e){}
+  return false;
+}
+
+(function init(){
+  if(loadFromHash()){render();return;}
+  if(loadFromSave()){render();return;}
+  render();
+})();
+</script>
+</body>
+</html>
