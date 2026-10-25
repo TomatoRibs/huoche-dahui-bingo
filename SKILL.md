@@ -1,5 +1,5 @@
 ---
-name: 车祸大会Bingo
+name: huoche-dahui-bingo
 display_name: 车祸大会Bingo
 display_name_en: Crash Convention Bingo
 description: 生成可离线打开的「车祸大会Bingo」单文件网页——会中勾职场奇葩事、连成线即翻车，散会生成横排一屏的毒舌事故报告，可一键保存 PNG 转发。当用户说要做会议宾果 / 翻车 / 职场摸鱼工具时触发。
