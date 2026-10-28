@@ -4,7 +4,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](./LICENSE) [![Single File HTML](https://img.shields.io/badge/Single--File-HTML-orange.svg)](./assets/huoche-dahui-bingo.html) [![WorkBuddy Skill](https://img.shields.io/badge/WorkBuddy-Skill-purple.svg)](./SKILL.md)
 
-**🔗 [在线体验 →](https://tomatoribs.github.io/huoche-dahui-bingo/)**（点开就玩 · 免安装 · 免注册）
+**这是一个 WorkBuddy 技能**——下载装好后，一句话就能生成或重做这一份。只想先看看效果，也可以只打开网页版。
 
 ![车祸大会 Bingo 首屏](./assets/preview.png)
 
@@ -13,6 +13,28 @@
 盘面每一格，都是会议里真会发生的事。会中发生了就点一下，横、竖、斜连成一条线，这场会就算当场翻车。散会补两句，生成一份毒舌事故报告。
 
 **3 种盘面 · 双模式 · 四类损伤 · 0–100 翻车指数 + 四等评级 · 0 上传**
+
+## 怎么装
+
+**方式一：装成 WorkBuddy 技能（推荐）**
+
+下载本仓库（右上角 `Code → Download ZIP`，或用 git），然后在解压出来的目录里执行：
+
+```bash
+git clone https://github.com/TomatoRibs/huoche-dahui-bingo.git
+cd huoche-dahui-bingo
+bash scripts/install_local.sh
+```
+
+装好后技能进入 `~/.workbuddy/skills/huoche-dahui-bingo/`，回到 WorkBuddy 直接说话即可。
+
+WorkBuddy 是一个本地 AI 助手；装成技能后，一句话触发：「做一个 3×3 / 4×4 / 5×5 三种盘面、会中点格连线翻车的会议宾果网页」。
+
+**方式二：只想打开网页版**
+
+1. 双击 `assets/huoche-dahui-bingo.html`（零外部依赖、不联网、不上传，手机可直接打开）。
+2. 选盘面大小与模式，会中听到一句点一格。
+3. 连成线就翻车；散会补两句现场状况，生成事故报告存图或分享。
 
 ## 盘面 · 模式 · 损伤
 
@@ -59,12 +81,6 @@
 
 > 格子与评语文案取自真实题库；翻车指数与评级由盘面勾选实时计算，以上为示例输出。
 
-## 怎么用
-
-1. 双击 `assets/huoche-dahui-bingo.html`（零外部依赖、不联网、不上传，手机可直接打开）。
-2. 选盘面大小与模式，会中听到一句点一格。
-3. 连成线就翻车；散会补两句现场状况，生成事故报告存图或分享。
-
 ## 隐私
 
 不录音，也不要你输入会议真实内容。盘面只存在这台设备的 localStorage，刷新不丢；封存报告后即清，不联网、不上传。分享链接只带勾选结果与吐槽文本。
@@ -87,14 +103,6 @@
 ## 为什么做这个
 
 开会最折磨人的不是议题，是那些谁都看见了、却没人会写进纪要的荒唐瞬间。把它做成宾果，至少散会时不用再怀疑：白开的不止你一个人觉得。
-
-## 装成 WorkBuddy 技能（可选）
-
-```bash
-bash scripts/install_local.sh .
-```
-
-WorkBuddy 是一个本地 AI 助手；装成技能后，一句话触发：「做一个 3×3 / 4×4 / 5×5 三种盘面、会中点格连线翻车的会议宾果网页」。
 
 ## 免责声明
 
